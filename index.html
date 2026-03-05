@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Puzzle for Maiku</title>
+
+<style>
+
+body{
+margin:0;
+font-family:sans-serif;
+background:linear-gradient(135deg,#ffe5ec,#e0f7ff);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+overflow:hidden;
+}
+
+#startScreen{
+text-align:center;
+}
+
+button{
+padding:12px 20px;
+font-size:16px;
+border:none;
+border-radius:10px;
+background:#ff8fb1;
+color:white;
+cursor:pointer;
+}
+
+#game{
+display:none;
+position:relative;
+width:600px;
+height:450px;
+}
+
+.piece{
+position:absolute;
+width:150px;
+height:150px;
+background-image:url("PUZZLE.png");
+background-size:600px 450px;
+cursor:pointer;
+}
+
+#reward{
+display:none;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+#reward img{
+width:400px;
+border-radius:12px;
+box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="startScreen">
+
+<h2>hi maiku</h2>
+
+<p>
+since you made me hunt for eggs<br>
+now it's your turn<br><br>
+
+solve the puzzle<br>
+to unlock your reward
+</p>
+
+<button onclick="startGame()">start puzzle</button>
+
+</div>
+
+<div id="game"></div>
+
+<div id="reward">
+
+<img src="REWARD_MESSAGE.png">
+
+</div>
+
+<audio id="music" loop>
+<source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_44b6d8d51c.mp3?filename=spring-in-my-step-109081.mp3">
+</audio>
+
+<script>
+
+const rows=3
+const cols=4
+
+const pieceWidth=150
+const pieceHeight=150
+
+const board=document.getElementById("game")
+
+let placed=0
+
+function startGame(){
+
+document.getElementById("startScreen").style.display="none"
+board.style.display="block"
+
+document.getElementById("music").play()
+
+createPieces()
+
+}
+
+function createPieces(){
+
+let positions=[]
+
+for(let r=0;r<rows;r++){
+for(let c=0;c<cols;c++){
+
+positions.push({r,c})
+
+}}
+
+positions.forEach((pos,index)=>{
+
+let piece=document.createElement("div")
+
+piece.className="piece"
+
+piece.style.backgroundPosition=
+`${-pos.c*pieceWidth}px ${-pos.r*pieceHeight}px`
+
+piece.dataset.correctX=pos.c*pieceWidth
+piece.dataset.correctY=pos.r*pieceHeight
+
+piece.style.left=(Math.random()*500)+"px"
+piece.style.top=(Math.random()*350)+"px"
+
+makeDraggable(piece)
+
+board.appendChild(piece)
+
+})
+
+}
+
+function makeDraggable(el){
+
+let offsetX,offsetY,isDown=false
+
+el.addEventListener("mousedown",e=>{
+
+isDown=true
+
+offsetX=e.offsetX
+offsetY=e.offsetY
+
+})
+
+document.addEventListener("mouseup",()=>{
+
+if(!isDown)return
+
+isDown=false
+
+snapCheck(el)
+
+})
+
+document.addEventListener("mousemove",e=>{
+
+if(!isDown)return
+
+el.style.left=(e.pageX-board.offsetLeft-offsetX)+"px"
+el.style.top=(e.pageY-board.offsetTop-offsetY)+"px"
+
+})
+
+}
+
+function snapCheck(piece){
+
+let correctX=parseInt(piece.dataset.correctX)
+let correctY=parseInt(piece.dataset.correctY)
+
+let x=parseInt(piece.style.left)
+let y=parseInt(piece.style.top)
+
+if(Math.abs(x-correctX)<30 && Math.abs(y-correctY)<30){
+
+piece.style.left=correctX+"px"
+piece.style.top=correctY+"px"
+
+piece.style.pointerEvents="none"
+
+placed++
+
+if(placed===rows*cols){
+
+setTimeout(showReward,500)
+
+}
+
+}
+
+}
+
+function showReward(){
+
+board.style.display="none"
+
+document.getElementById("reward").style.display="block"
+
+}
+
+</script>
+
+</body>
+</html>
