@@ -18,25 +18,27 @@ height:100vh;
 overflow:hidden;
 }
 
+/* START SCREEN */
+
 #startScreen{
 text-align:center;
 padding:30px;
 }
 
 #startScreen h1{
-font-size:38px;
+font-size:40px;
 margin-bottom:10px;
 }
 
 #startScreen p{
 font-size:24px;
-line-height:1.5;
+line-height:1.6;
 }
 
 #startBtn{
 margin-top:30px;
 font-size:28px;
-padding:18px 32px;
+padding:18px 36px;
 border:none;
 border-radius:16px;
 background:#ff8fb1;
@@ -44,20 +46,36 @@ color:white;
 cursor:pointer;
 }
 
+/* PUZZLE BOARD */
+
 #game{
 display:none;
 position:relative;
 width:90vw;
 height:70vh;
 max-width:600px;
+border-radius:20px;
+overflow:hidden;
+border:6px solid white;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+
+/* faint puzzle guide */
+background-image:url("PUZZLE.png");
+background-size:100% 100%;
+opacity:0.95;
 }
+
+/* PUZZLE PIECES */
 
 .piece{
 position:absolute;
 border-radius:16px;
 background-image:url("PUZZLE.png");
 touch-action:none;
+z-index:5;
 }
+
+/* REWARD SCREEN */
 
 #reward{
 display:none;
@@ -102,35 +120,33 @@ to unlock your reward
 <img src="REWARD_MESSAGE.png">
 </div>
 
-<!-- BACKGROUND MUSIC -->
 <audio id="music" loop preload="auto">
 <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<!-- SNAP SOUND -->
 <audio id="snap" preload="auto">
 <source src="snap.mp3" type="audio/mpeg">
 </audio>
 
 <script>
 
-const rows=3
-const cols=4
+const rows = 3
+const cols = 4
 
-let board=document.getElementById("game")
-let placed=0
+let board = document.getElementById("game")
+let placed = 0
 
-let music=document.getElementById("music")
-let snap=document.getElementById("snap")
+let music = document.getElementById("music")
+let snap = document.getElementById("snap")
 
-document.getElementById("startBtn").onclick=startGame
+document.getElementById("startBtn").onclick = startGame
 
 function startGame(){
 
-document.getElementById("startScreen").style.display="none"
-board.style.display="block"
+document.getElementById("startScreen").style.display = "none"
+board.style.display = "block"
 
-music.volume=0.25
+music.volume = 0.25
 music.play().catch(()=>{})
 
 createPieces()
@@ -139,29 +155,28 @@ createPieces()
 
 function createPieces(){
 
-let boardRect=board.getBoundingClientRect()
+let rect = board.getBoundingClientRect()
 
-let pieceW=boardRect.width/cols
-let pieceH=boardRect.height/rows
+let pieceW = rect.width / cols
+let pieceH = rect.height / rows
 
 for(let r=0;r<rows;r++){
 for(let c=0;c<cols;c++){
 
-let piece=document.createElement("div")
-piece.className="piece"
+let piece = document.createElement("div")
+piece.className = "piece"
 
-piece.style.width=pieceW+"px"
-piece.style.height=pieceH+"px"
+piece.style.width = pieceW + "px"
+piece.style.height = pieceH + "px"
 
-piece.style.backgroundImage="url('PUZZLE.png')"
-piece.style.backgroundSize=boardRect.width+"px "+boardRect.height+"px"
-piece.style.backgroundPosition=(-c*pieceW)+"px "+(-r*pieceH)+"px"
+piece.style.backgroundSize = rect.width + "px " + rect.height + "px"
+piece.style.backgroundPosition = (-c * pieceW) + "px " + (-r * pieceH) + "px"
 
-piece.correctX=c*pieceW
-piece.correctY=r*pieceH
+piece.correctX = c * pieceW
+piece.correctY = r * pieceH
 
-piece.style.left=(Math.random()*boardRect.width)+"px"
-piece.style.top=(Math.random()*boardRect.height)+"px"
+piece.style.left = Math.random() * rect.width + "px"
+piece.style.top = Math.random() * rect.height + "px"
 
 enableDrag(piece)
 
@@ -174,14 +189,14 @@ board.appendChild(piece)
 
 function enableDrag(piece){
 
-let offsetX,offsetY
+let offsetX, offsetY
 
 piece.addEventListener("touchstart",e=>{
 
-let touch=e.touches[0]
+let touch = e.touches[0]
 
-offsetX=touch.clientX-piece.offsetLeft
-offsetY=touch.clientY-piece.offsetTop
+offsetX = touch.clientX - piece.offsetLeft
+offsetY = touch.clientY - piece.offsetTop
 
 })
 
@@ -189,10 +204,10 @@ piece.addEventListener("touchmove",e=>{
 
 e.preventDefault()
 
-let touch=e.touches[0]
+let touch = e.touches[0]
 
-piece.style.left=(touch.clientX-offsetX)+"px"
-piece.style.top=(touch.clientY-offsetY)+"px"
+piece.style.left = (touch.clientX - offsetX) + "px"
+piece.style.top = (touch.clientY - offsetY) + "px"
 
 })
 
@@ -206,27 +221,30 @@ checkSnap(piece)
 
 function checkSnap(piece){
 
-let dx=Math.abs(parseFloat(piece.style.left)-piece.correctX)
-let dy=Math.abs(parseFloat(piece.style.top)-piece.correctY)
+let dx = Math.abs(parseFloat(piece.style.left) - piece.correctX)
+let dy = Math.abs(parseFloat(piece.style.top) - piece.correctY)
 
-if(dx<35 && dy<35){
+if(dx < 40 && dy < 40){
 
-piece.style.left=piece.correctX+"px"
-piece.style.top=piece.correctY+"px"
+piece.style.left = piece.correctX + "px"
+piece.style.top = piece.correctY + "px"
 
-piece.style.transform="scale(1.05)"
-setTimeout(()=>piece.style.transform="scale(1)",120)
+piece.style.transform = "scale(1.08)"
 
-snap.currentTime=0
+setTimeout(()=>{
+piece.style.transform = "scale(1)"
+},120)
+
+snap.currentTime = 0
 snap.play()
 
-piece.style.pointerEvents="none"
+piece.style.pointerEvents = "none"
 
 placed++
 
-if(placed===rows*cols){
+if(placed === rows * cols){
 
-setTimeout(showReward,600)
+setTimeout(showReward,700)
 
 }
 
@@ -236,8 +254,8 @@ setTimeout(showReward,600)
 
 function showReward(){
 
-board.style.display="none"
-document.getElementById("reward").style.display="block"
+board.style.display = "none"
+document.getElementById("reward").style.display = "block"
 
 }
 
