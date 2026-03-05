@@ -49,6 +49,7 @@ cursor:pointer;
 /* PUZZLE BOARD */
 
 #game{
+#game{
 display:none;
 position:relative;
 width:90vw;
@@ -58,7 +59,19 @@ border-radius:20px;
 overflow:hidden;
 border:6px solid white;
 box-shadow:0 10px 25px rgba(0,0,0,0.2);
-
+background:#ffffff;
+  }
+  #game::before{
+content:"";
+position:absolute;
+width:100%;
+height:100%;
+background-image:
+linear-gradient(#ddd 2px, transparent 2px),
+linear-gradient(90deg,#ddd 2px, transparent 2px);
+background-size:25% 33.33%;
+pointer-events:none;
+  }
 /* faint puzzle guide */
 background-image:url("PUZZLE.png");
 background-size:100% 100%;
@@ -263,3 +276,4 @@ document.getElementById("reward").style.display = "block"
 
 </body>
 </html>
+
