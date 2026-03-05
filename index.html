@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Puzzle for Maiku</title>
 
 <style>
@@ -80,7 +79,7 @@ border:2px dashed #ddd;
 border-radius:12px;
 }
 
-/* PIECES */
+/* PUZZLE PIECES */
 
 .piece{
 position:absolute;
@@ -91,7 +90,7 @@ touch-action:none;
 z-index:10;
 }
 
-/* REWARD */
+/* REWARD SCREEN */
 
 #reward{
 display:none;
@@ -107,6 +106,19 @@ width:85vw;
 max-width:420px;
 border-radius:20px;
 box-shadow:0 10px 30px rgba(0,0,0,0.25);
+}
+
+/* END BUTTON */
+
+#endBtn{
+margin-top:20px;
+font-size:22px;
+padding:12px 28px;
+border:none;
+border-radius:14px;
+background:#ff8fb1;
+color:white;
+cursor:pointer;
 }
 
 </style>
@@ -154,7 +166,13 @@ to unlock your reward
 </div>
 
 <div id="reward">
+
 <img src="REWARD_MESSAGE.png">
+
+<br><br>
+
+<button id="endBtn">poof ✨</button>
+
 </div>
 
 <audio id="music" loop>
@@ -211,8 +229,6 @@ piece.style.backgroundPosition=(-c*pieceW)+"px "+(-r*pieceH)+"px"
 
 piece.correctX=c*pieceW
 piece.correctY=r*pieceH
-
-/* spawn around board */
 
 piece.style.left=(Math.random()*window.innerWidth)+"px"
 piece.style.top=(Math.random()*window.innerHeight)+"px"
@@ -296,6 +312,20 @@ document.querySelectorAll(".piece").forEach(p=>p.remove())
 board.style.display="none"
 
 document.getElementById("reward").style.display="block"
+
+}
+
+document.getElementById("endBtn").onclick=function(){
+
+music.pause()
+music.currentTime=0
+
+document.body.style.transition="0.8s"
+document.body.style.opacity="0"
+
+setTimeout(()=>{
+document.body.innerHTML=""
+},800)
 
 }
 
