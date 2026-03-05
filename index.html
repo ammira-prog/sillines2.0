@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Puzzle for Maiku</title>
 
 <style>
@@ -26,7 +27,7 @@ padding:30px;
 }
 
 #startScreen h1{
-font-size:40px;
+font-size:42px;
 margin-bottom:10px;
 }
 
@@ -49,46 +50,48 @@ cursor:pointer;
 /* PUZZLE BOARD */
 
 #game{
-#game{
 display:none;
 position:relative;
 width:90vw;
-height:70vh;
+height:65vh;
 max-width:600px;
 border-radius:20px;
-overflow:hidden;
 border:6px solid white;
 box-shadow:0 10px 25px rgba(0,0,0,0.2);
-background:#ffffff;
-  }
-  #game::before{
-content:"";
+background:#fafafa;
+}
+
+/* GRID GUIDE */
+
+#grid{
 position:absolute;
 width:100%;
 height:100%;
-background-image:
-linear-gradient(#ddd 2px, transparent 2px),
-linear-gradient(90deg,#ddd 2px, transparent 2px);
-background-size:25% 33.33%;
-pointer-events:none;
-  }
-/* faint puzzle guide */
-background-image:url("PUZZLE.png");
-background-size:100% 100%;
-opacity:0.95;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+grid-template-rows:repeat(3,1fr);
+gap:6px;
+padding:6px;
+box-sizing:border-box;
 }
 
-/* PUZZLE PIECES */
+.slot{
+border:2px dashed #ddd;
+border-radius:12px;
+}
+
+/* PIECES */
 
 .piece{
 position:absolute;
-border-radius:16px;
+border-radius:14px;
 background-image:url("PUZZLE.png");
+background-repeat:no-repeat;
 touch-action:none;
-z-index:5;
+z-index:10;
 }
 
-/* REWARD SCREEN */
+/* REWARD */
 
 #reward{
 display:none;
@@ -127,17 +130,38 @@ to unlock your reward
 
 </div>
 
-<div id="game"></div>
+<div id="game">
+
+<div id="grid">
+
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+<div class="slot"></div>
+
+</div>
+
+</div>
 
 <div id="reward">
 <img src="REWARD_MESSAGE.png">
 </div>
 
-<audio id="music" loop preload="auto">
+<audio id="music" loop>
 <source src="music.mp3" type="audio/mpeg">
 </audio>
 
-<audio id="snap" preload="auto">
+<audio id="snap">
 <source src="snap.mp3" type="audio/mpeg">
 </audio>
 
@@ -156,8 +180,8 @@ document.getElementById("startBtn").onclick = startGame
 
 function startGame(){
 
-document.getElementById("startScreen").style.display = "none"
-board.style.display = "block"
+document.getElementById("startScreen").style.display="none"
+board.style.display="block"
 
 music.volume = 0.25
 music.play().catch(()=>{})
@@ -176,24 +200,26 @@ let pieceH = rect.height / rows
 for(let r=0;r<rows;r++){
 for(let c=0;c<cols;c++){
 
-let piece = document.createElement("div")
-piece.className = "piece"
+let piece=document.createElement("div")
+piece.className="piece"
 
-piece.style.width = pieceW + "px"
-piece.style.height = pieceH + "px"
+piece.style.width=pieceW+"px"
+piece.style.height=pieceH+"px"
 
-piece.style.backgroundSize = rect.width + "px " + rect.height + "px"
-piece.style.backgroundPosition = (-c * pieceW) + "px " + (-r * pieceH) + "px"
+piece.style.backgroundSize=rect.width+"px "+rect.height+"px"
+piece.style.backgroundPosition=(-c*pieceW)+"px "+(-r*pieceH)+"px"
 
-piece.correctX = c * pieceW
-piece.correctY = r * pieceH
+piece.correctX=c*pieceW
+piece.correctY=r*pieceH
 
-piece.style.left = Math.random() * rect.width + "px"
-piece.style.top = Math.random() * rect.height + "px"
+/* spawn around board */
+
+piece.style.left=(Math.random()*window.innerWidth)+"px"
+piece.style.top=(Math.random()*window.innerHeight)+"px"
 
 enableDrag(piece)
 
-board.appendChild(piece)
+document.body.appendChild(piece)
 
 }
 }
@@ -202,14 +228,14 @@ board.appendChild(piece)
 
 function enableDrag(piece){
 
-let offsetX, offsetY
+let offsetX,offsetY
 
 piece.addEventListener("touchstart",e=>{
 
-let touch = e.touches[0]
+let touch=e.touches[0]
 
-offsetX = touch.clientX - piece.offsetLeft
-offsetY = touch.clientY - piece.offsetTop
+offsetX=touch.clientX-piece.offsetLeft
+offsetY=touch.clientY-piece.offsetTop
 
 })
 
@@ -217,10 +243,10 @@ piece.addEventListener("touchmove",e=>{
 
 e.preventDefault()
 
-let touch = e.touches[0]
+let touch=e.touches[0]
 
-piece.style.left = (touch.clientX - offsetX) + "px"
-piece.style.top = (touch.clientY - offsetY) + "px"
+piece.style.left=(touch.clientX-offsetX)+"px"
+piece.style.top=(touch.clientY-offsetY)+"px"
 
 })
 
@@ -234,28 +260,26 @@ checkSnap(piece)
 
 function checkSnap(piece){
 
-let dx = Math.abs(parseFloat(piece.style.left) - piece.correctX)
-let dy = Math.abs(parseFloat(piece.style.top) - piece.correctY)
+let dx=Math.abs(parseFloat(piece.style.left)-board.offsetLeft-piece.correctX)
+let dy=Math.abs(parseFloat(piece.style.top)-board.offsetTop-piece.correctY)
 
-if(dx < 40 && dy < 40){
+if(dx<40 && dy<40){
 
-piece.style.left = piece.correctX + "px"
-piece.style.top = piece.correctY + "px"
+piece.style.left=(board.offsetLeft+piece.correctX)+"px"
+piece.style.top=(board.offsetTop+piece.correctY)+"px"
 
-piece.style.transform = "scale(1.08)"
+piece.style.transform="scale(1.05)"
 
-setTimeout(()=>{
-piece.style.transform = "scale(1)"
-},120)
+setTimeout(()=>piece.style.transform="scale(1)",120)
 
-snap.currentTime = 0
+snap.currentTime=0
 snap.play()
 
-piece.style.pointerEvents = "none"
+piece.style.pointerEvents="none"
 
 placed++
 
-if(placed === rows * cols){
+if(placed===rows*cols){
 
 setTimeout(showReward,700)
 
@@ -267,13 +291,15 @@ setTimeout(showReward,700)
 
 function showReward(){
 
-board.style.display = "none"
-document.getElementById("reward").style.display = "block"
+document.querySelectorAll(".piece").forEach(p=>p.remove())
+
+board.style.display="none"
+
+document.getElementById("reward").style.display="block"
 
 }
 
 </script>
 
 </body>
-</html>
-
+  </html>
