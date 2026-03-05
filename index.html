@@ -9,13 +9,14 @@
 
 body{
 margin:0;
-font-family:Arial, sans-serif;
+font-family:Arial,sans-serif;
 background:linear-gradient(180deg,#f7d9e6,#d8e9ff);
 display:flex;
 align-items:center;
 justify-content:center;
 height:100vh;
 overflow:hidden;
+touch-action:none;
 }
 
 /* START SCREEN */
@@ -27,7 +28,6 @@ padding:30px;
 
 #startScreen h1{
 font-size:42px;
-margin-bottom:10px;
 }
 
 #startScreen p{
@@ -36,9 +36,9 @@ line-height:1.6;
 }
 
 #startBtn{
-margin-top:30px;
+margin-top:25px;
 font-size:28px;
-padding:18px 36px;
+padding:16px 36px;
 border:none;
 border-radius:16px;
 background:#ff8fb1;
@@ -60,7 +60,7 @@ box-shadow:0 10px 25px rgba(0,0,0,0.2);
 background:#fafafa;
 }
 
-/* GRID GUIDE */
+/* GRID */
 
 #grid{
 position:absolute;
@@ -79,7 +79,7 @@ border:2px dashed #ddd;
 border-radius:12px;
 }
 
-/* PUZZLE PIECES */
+/* PIECES */
 
 .piece{
 position:absolute;
@@ -90,7 +90,7 @@ touch-action:none;
 z-index:10;
 }
 
-/* REWARD SCREEN */
+/* REWARD */
 
 #reward{
 display:none;
@@ -107,8 +107,6 @@ max-width:420px;
 border-radius:20px;
 box-shadow:0 10px 30px rgba(0,0,0,0.25);
 }
-
-/* END BUTTON */
 
 #endBtn{
 margin-top:20px;
@@ -133,7 +131,6 @@ cursor:pointer;
 <p>
 since you made me hunt for eggs<br>
 now it's your turn<br><br>
-
 solve the puzzle<br>
 to unlock your reward
 </p>
@@ -146,20 +143,9 @@ to unlock your reward
 
 <div id="grid">
 
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
-<div class="slot"></div>
+<div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+<div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+<div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
 
 </div>
 
@@ -185,23 +171,23 @@ to unlock your reward
 
 <script>
 
-const rows = 3
-const cols = 4
+const rows=3
+const cols=4
 
-let board = document.getElementById("game")
-let placed = 0
+let board=document.getElementById("game")
+let placed=0
 
-let music = document.getElementById("music")
-let snap = document.getElementById("snap")
+let music=document.getElementById("music")
+let snap=document.getElementById("snap")
 
-document.getElementById("startBtn").onclick = startGame
+document.getElementById("startBtn").onclick=startGame
 
 function startGame(){
 
 document.getElementById("startScreen").style.display="none"
 board.style.display="block"
 
-music.volume = 0.25
+music.volume=0.25
 music.play().catch(()=>{})
 
 createPieces()
@@ -210,10 +196,10 @@ createPieces()
 
 function createPieces(){
 
-let rect = board.getBoundingClientRect()
+let rect=board.getBoundingClientRect()
 
-let pieceW = rect.width / cols
-let pieceH = rect.height / rows
+let pieceW=rect.width/cols
+let pieceH=rect.height/rows
 
 for(let r=0;r<rows;r++){
 for(let c=0;c<cols;c++){
@@ -230,8 +216,10 @@ piece.style.backgroundPosition=(-c*pieceW)+"px "+(-r*pieceH)+"px"
 piece.correctX=c*pieceW
 piece.correctY=r*pieceH
 
-piece.style.left=(Math.random()*window.innerWidth)+"px"
-piece.style.top=(Math.random()*window.innerHeight)+"px"
+/* spawn around board safely */
+
+piece.style.left=(Math.random()*(window.innerWidth-pieceW))+"px"
+piece.style.top=(Math.random()*(window.innerHeight-pieceH))+"px"
 
 enableDrag(piece)
 
@@ -247,6 +235,8 @@ function enableDrag(piece){
 let offsetX,offsetY
 
 piece.addEventListener("touchstart",e=>{
+
+piece.style.zIndex=1000
 
 let touch=e.touches[0]
 
@@ -292,6 +282,7 @@ snap.currentTime=0
 snap.play()
 
 piece.style.pointerEvents="none"
+piece.style.zIndex=5
 
 placed++
 
@@ -332,4 +323,4 @@ document.body.innerHTML=""
 </script>
 
 </body>
-  </html>
+</html>
